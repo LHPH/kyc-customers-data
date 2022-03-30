@@ -17,7 +17,7 @@
         CA.STREET,CA.STREET_NUMBER,CA.NEIGHBOURHOOD,CA.ID_STATE
         FROM KYC_CUSTOMER C INNER JOIN KYC_CUSTOMER_ADDRESS CA
         ON C.ID = CA.ID_CUSTOMER
-        WHERE C.ID = ?
+        WHERE C.ID = ? and C.ACTIVE = true
     </entry>
 
     <entry key="getCustomerByRfc">
@@ -26,7 +26,7 @@
         CA.STREET,CA.STREET_NUMBER,CA.NEIGHBOURHOOD,CA.ID_STATE
         FROM KYC_CUSTOMER C INNER JOIN KYC_CUSTOMER_ADDRESS CA
         ON C.ID = CA.ID_CUSTOMER
-        WHERE C.RFC= ?
+        WHERE C.RFC= ? and C.ACTIVE = true
     </entry>
 
     <entry key="getCustomerByName">
@@ -41,6 +41,10 @@
     <entry key="SP_KYC_PROCESS_CUSTOMER">
         CALL SP_KYC_PROCESS_CUSTOMER(:OPERATION,:P_ID_CUSTOMER,:P_FIRST_NAME,:P_SECOND_NAME,:P_LAST_NAME,:P_SECOND_LAST_NAME,
         :P_RFC,:P_AGE,:P_HOME_PHONE,:P_CELL_PHONE,:P_EMAIL,:P_ACTIVE,:P_STREET,:P_STREET_NUMBER,:P_NEIGHBOURHOOD,:P_ID_STATE)
+    </entry>
+
+    <entry key="SP_KYC_GET_ID_CUSTOMER">
+        SELECT SP_KYC_GET_ID_CUSTOMER(?,?,?,?,?)
     </entry>
     
 </properties>

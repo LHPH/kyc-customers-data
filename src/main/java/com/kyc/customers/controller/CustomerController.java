@@ -1,9 +1,9 @@
 package com.kyc.customers.controller;
 
 import com.kyc.core.model.web.RequestData;
+import com.kyc.customers.model.graphql.input.CustomerFilter;
 import com.kyc.customers.model.graphql.input.CustomerInput;
 import com.kyc.customers.model.graphql.types.Customer;
-import com.kyc.customers.model.graphql.input.CustomerFilter;
 import com.kyc.customers.services.CustomerService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

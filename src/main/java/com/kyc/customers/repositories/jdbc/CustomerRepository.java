@@ -1,7 +1,7 @@
 package com.kyc.customers.repositories.jdbc;
 
-import com.kyc.customers.model.graphql.types.Customer;
 import com.kyc.customers.model.graphql.input.CustomerName;
+import com.kyc.customers.model.graphql.types.Customer;
 import com.kyc.customers.repositories.mappers.CustomerMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,9 +29,7 @@ public class CustomerRepository {
 
         String sql = String.valueOf(queriesProps.get("getAllCustomers"));
 
-        List<Customer> customers = jdbcTemplate.query(sql,new CustomerMapper());
-
-        return customers;
+        return jdbcTemplate.query(sql,new CustomerMapper());
     }
 
     public Customer getCustomerById(Integer id){

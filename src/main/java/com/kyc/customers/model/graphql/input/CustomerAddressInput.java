@@ -23,11 +23,11 @@ public class CustomerAddressInput {
     private String street;
 
     @NotNull
-    @Pattern(regexp ="^[\\dA-Z\\s]{2,5}$")
+    @Pattern(regexp ="^[\\dA-Z\\s]{1,5}$")
     private String streetNumber;
 
     @NotNull
-    @Pattern(regexp ="^[\\d]{10}$")
+    @Pattern(regexp ="^[\\p{IsLatin}\\s\\.\\-]{3,20}$")
     private String neighbourhood;
 
     @NotNull

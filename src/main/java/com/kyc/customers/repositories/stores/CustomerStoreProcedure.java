@@ -25,25 +25,27 @@ public class CustomerStoreProcedure {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CustomerStoreProcedure.class);
 
-    @Autowired
-    private JdbcTemplate jdbcTemplate;
+    private final JdbcTemplate jdbcTemplate;
+
+    private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
+
+    private final Properties queriesProps;
+
+    private final SimpleJdbcCall simpleJdbcCall;
 
     @Autowired
-    private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
-
-    @Autowired
-    @Qualifier("queriesProps")
-    private Properties queriesProps;
-
-    private SimpleJdbcCall simpleJdbcCall;
-
-    @Autowired
-    public CustomerStoreProcedure(SimpleJdbcCallFactory factory){
+    public CustomerStoreProcedure(JdbcTemplate jdbcTemplate,
+                                  NamedParameterJdbcTemplate namedParameterJdbcTemplate,
+                                  @Qualifier("queriesProps") Properties queriesProps,
+                                  SimpleJdbcCallFactory factory){
 
         SimpleJdbcCallParams params = SimpleJdbcCallParams.builder()
                 .procedureName("SP_KYC_PROCESS_CUSTOMER")
                 .build();
 
+        this.jdbcTemplate = jdbcTemplate;
+        this.namedParameterJdbcTemplate = namedParameterJdbcTemplate;
+        this.queriesProps = queriesProps;
         simpleJdbcCall = factory.getSimpleJdbcCall(params,false);
     }
 
@@ -76,7 +78,7 @@ public class CustomerStoreProcedure {
 
     public int getIdCustomer(Customer customer){
 
-        String sql = "SELECT SP_KYC_GET_ID_CUSTOMER(?,?,?,?,?)";
+        String sql = queriesProps.get("SP_KYC_GET_ID_CUSTOMER").toString();
         Object [] obj = new Object[]{customer.getFirstName(),customer.getSecondName(),
                 customer.getLastName(),customer.getSecondLastName(),customer.getRfc()};
 

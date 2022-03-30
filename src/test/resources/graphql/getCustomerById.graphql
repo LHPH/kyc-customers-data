@@ -1,0 +1,21 @@
+query getCustomerById($id: ID!) {
+    customer(filter: {id: $id}) {
+        id
+        firstName,
+        secondName,
+        lastName,
+        secondLastName
+        rfc,
+        age,
+        homePhone,
+        cellPhone,
+        email,
+        active,
+        address{
+            street,
+            streetNumber,
+            neighbourhood,
+            idState
+        }
+    }
+}

@@ -1,8 +1,9 @@
 package com.kyc.customers.exception;
 
-import com.kyc.core.exception.KycRestException;
+import com.kyc.core.exception.KycGraphqlException;
 import com.kyc.core.model.web.MessageData;
 import com.kyc.core.properties.KycMessages;
+import graphql.ErrorClassification;
 import graphql.GraphQLError;
 import graphql.GraphqlErrorBuilder;
 import graphql.schema.DataFetchingEnvironment;
@@ -11,7 +12,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.graphql.execution.DataFetcherExceptionResolver;
 import org.springframework.graphql.execution.ErrorType;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Mono;
 
@@ -37,51 +37,55 @@ public class CustomerDataFetcherExceptionResolver implements DataFetcherExceptio
 
         GraphQLError error;
         MessageData messageData;
-        HttpStatus httpStatus;
+        String message;
+        ErrorClassification errorType;
+        Map<String, Object> extensions;
 
-        if(exception instanceof KycRestException){
+        if(exception instanceof KycGraphqlException){
 
-            KycRestException ex = (KycRestException)exception;
-            LOGGER.error("{}",exception.toString());
-            messageData = ex.getErrorData();
-            httpStatus = ex.getStatus();
+            KycGraphqlException ex = (KycGraphqlException)exception;
+            LOGGER.error("{}",ex.printError());
+            message = ex.getErrorData().getMessage();
+            errorType = ex.getErrorType();
+            extensions = ex.getExtensions();
+
         }
         else if(exception instanceof ConstraintViolationException){
 
+            ConstraintViolationException ex = (ConstraintViolationException)exception;
             LOGGER.error(" ",exception);
             messageData = kycMessages.getMessage(MSG_CODE_001);
-            httpStatus = HttpStatus.BAD_REQUEST;
+            errorType = ErrorType.BAD_REQUEST;
+            message = ex.getMessage();
+            extensions = setExtensions(messageData);
         }
         else{
 
             LOGGER.error(" ",exception);
             messageData = kycMessages.getMessage(MSG_CODE_000);
-            httpStatus = HttpStatus.INTERNAL_SERVER_ERROR;
+            message = exception.getMessage();
+            errorType = ErrorType.INTERNAL_ERROR;
+            extensions = setExtensions(messageData);
         }
 
-        Map<String, Object> extensions = new HashMap<>();
-        extensions.put("code",messageData.getCode());
-        extensions.put("time",messageData.getTime());
-
         error = GraphqlErrorBuilder.newError(environment)
-                .message(messageData.getMessage())
+                .message(message)
                 .extensions(extensions)
-                .errorType(getErrorType(httpStatus))
+                .errorType(errorType)
                 .build();
 
         return Mono.just(Collections.singletonList(error));
     }
 
-    private ErrorType getErrorType(HttpStatus httpStatus){
+    private HashMap<String,Object> setExtensions(MessageData messageData){
 
-        switch (httpStatus){
-            case UNAUTHORIZED:
-                return ErrorType.UNAUTHORIZED;
-            case BAD_REQUEST:
-            case UNPROCESSABLE_ENTITY:
-                return ErrorType.BAD_REQUEST;
-            default:
-                return ErrorType.INTERNAL_ERROR;
+        HashMap<String,Object> extensions = new HashMap<>();
+        if(messageData!=null){
+
+            extensions.put("code",messageData.getCode());
+            extensions.put("description",messageData.getMessage());
+            extensions.put("time",messageData.getTime());
         }
+        return extensions;
     }
 }

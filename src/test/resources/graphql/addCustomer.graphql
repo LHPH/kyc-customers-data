@@ -1,0 +1,20 @@
+mutation addCustomer {
+
+    addCustomer(customer: {
+        firstName:"TEST",
+        secondName:"TEST",
+        lastName:"TEST",
+        secondLastName: "TEST",
+        rfc: "TEST901010KD9",
+        age:"20"
+        homePhone:"5544332211"
+        cellPhone:"5544332211",
+        email:"dev@test.com",
+        address:{
+            street:"AV TEST",
+            streetNumber: "SN",
+            neighbourhood: "Condesa",
+            idState:1
+        }
+    })
+}

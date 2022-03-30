@@ -46,3 +46,6 @@ kyc-messages:
       "002":
         code: KYC-CUSTOMERS-DATA-002
         message: The operation cannot be performed at this moment
+      "003":
+        code: KYC-CUSTOMERS-DATA-003
+        message: The customer already exists

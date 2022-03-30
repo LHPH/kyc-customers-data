@@ -1,7 +1,6 @@
 package com.kyc.customers.config;
 
 import com.kyc.core.config.LoadSimpleSqlConfig;
-import com.kyc.core.config.DebugInputRequestConfig;
 import com.kyc.core.factory.SimpleJdbcCallFactory;
 import com.kyc.core.properties.KycMessages;
 import org.springframework.context.annotation.Bean;

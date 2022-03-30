@@ -8,10 +8,8 @@ import lombok.ToString;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Email;
-import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
-import javax.validation.constraints.Size;
 
 @Setter
 @Getter
@@ -39,7 +37,7 @@ public class CustomerInput {
     private String age;
 
     @NotNull
-    @Pattern(regexp ="^[A-Z]{4}[\\d]{6}([A-Z\\d])?$")
+    @Pattern(regexp ="^[A-Z]{4}[\\d]{6}([A-Z\\d]{3})?$")
     private String rfc;
 
     @Pattern(regexp ="^[\\d]{10}$")
@@ -53,7 +51,6 @@ public class CustomerInput {
     @Email
     private String email;
 
-    @NotNull
     private Boolean active;
 
     @NotNull

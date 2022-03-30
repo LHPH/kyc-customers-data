@@ -2,6 +2,7 @@ package com.kyc.customers.repositories.mappers;
 
 import com.kyc.customers.model.graphql.types.Customer;
 import com.kyc.customers.model.graphql.types.CustomerAddress;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.jdbc.core.RowMapper;
 
 import java.sql.ResultSet;
@@ -14,10 +15,10 @@ public class CustomerMapper implements RowMapper<Customer> {
 
         Customer customer = new Customer();
         customer.setId(resultSet.getInt("ID"));
-        customer.setFirstName(resultSet.getString("FIRST_NAME"));
-        customer.setSecondName(resultSet.getString("SECOND_NAME"));
-        customer.setLastName(resultSet.getString("LAST_NAME"));
-        customer.setSecondLastName(resultSet.getString("SECOND_LAST_NAME"));
+        customer.setFirstName(StringUtils.upperCase(resultSet.getString("FIRST_NAME")));
+        customer.setSecondName(StringUtils.upperCase(resultSet.getString("SECOND_NAME")));
+        customer.setLastName(StringUtils.upperCase(resultSet.getString("LAST_NAME")));
+        customer.setSecondLastName(StringUtils.upperCase(resultSet.getString("SECOND_LAST_NAME")));
         customer.setRfc(resultSet.getString("RFC"));
         customer.setAge(resultSet.getString("AGE"));
         customer.setCellPhone(resultSet.getString("CELL_PHONE"));
@@ -26,9 +27,9 @@ public class CustomerMapper implements RowMapper<Customer> {
         customer.setEmail(resultSet.getString("EMAIL"));
 
         CustomerAddress address = new CustomerAddress();
-        address.setStreet(resultSet.getString("STREET"));
-        address.setStreetNumber(resultSet.getString("STREET_NUMBER"));
-        address.setNeighbourhood(resultSet.getString("NEIGHBOURHOOD"));
+        address.setStreet(StringUtils.upperCase(resultSet.getString("STREET")));
+        address.setStreetNumber(StringUtils.upperCase(resultSet.getString("STREET_NUMBER")));
+        address.setNeighbourhood(StringUtils.upperCase(resultSet.getString("NEIGHBOURHOOD")));
         address.setIdState(resultSet.getInt("ID_STATE"));
 
         customer.setAddress(address);

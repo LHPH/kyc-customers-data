@@ -1,0 +1,25 @@
+mutation updateCustomer {
+    updateCustomer(
+        id: 1
+        customer: {
+            firstName: "TEST"
+            secondName: null
+            lastName: "TEST"
+            secondLastName: "TEST"
+            rfc: "TEST901010DS2"
+            age: "30"
+            homePhone: "5544332211"
+            cellPhone: "5533221100"
+            email: "test@test.com"
+            active: true
+            address: {
+                street: "AV EL PASO"
+                streetNumber: "2"
+                neighbourhood: "Condesa"
+                idState: 20
+            }
+        }
+    ) {
+        id
+    }
+}
