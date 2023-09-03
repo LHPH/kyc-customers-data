@@ -14,8 +14,13 @@ query getAllCustomers {
     address{
       street,
       streetNumber,
-      neighbourhood,
-      idState
+      postalCode,
+      idNeighborhood,
+      neighborhood,
+      idCity,
+      city,
+      idState,
+      state
     }
   }
 }

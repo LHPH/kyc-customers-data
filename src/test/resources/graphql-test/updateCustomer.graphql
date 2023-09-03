@@ -15,8 +15,8 @@ mutation updateCustomer {
             address: {
                 street: "AV EL PASO"
                 streetNumber: "2"
-                neighbourhood: "Condesa"
-                idState: 20
+                postalCode: "02000"
+                idNeighborhood: 20
             }
         }
     ) {

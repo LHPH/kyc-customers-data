@@ -15,7 +15,11 @@ public class CustomerAddress {
 
     private String street;
     private String streetNumber;
+    private String postalCode;
+    private Integer idNeighborhood;
     private String neighbourhood;
+    private Integer idCity;
+    private String city;
     private Integer idState;
-
+    private String state;
 }

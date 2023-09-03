@@ -27,10 +27,10 @@ public class CustomerAddressInput {
     private String streetNumber;
 
     @NotNull
-    @Pattern(regexp ="^[\\p{IsLatin}\\s\\.\\-]{3,20}$")
-    private String neighbourhood;
+    @Pattern(regexp ="^[\\d]{5}$")
+    private String postalCode;
 
     @NotNull
-    @Min(1)@Max(32)
-    private Integer idState;
+    @Min(1)@Max(2000)
+    private Integer idNeighborhood;
 }

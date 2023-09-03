@@ -38,8 +38,13 @@ type Customer{
 type Address{
     street: String
     streetNumber: String
-    neighbourhood: String
+    postalCode: String
+    idNeighborhood: Int
+    neighborhood: String
+    idCity: Int
+    city: String
     idState: Int
+    state: String
 }
 
 
@@ -78,6 +83,6 @@ input CustomerInput{
 input CustomerAddressInput{
     street: String
     streetNumber: String
-    neighbourhood: String
-    idState: Int
+    postalCode: String
+    idNeighborhood: Int
 }

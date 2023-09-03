@@ -13,8 +13,8 @@ mutation addCustomer {
         address:{
             street:"AV TEST",
             streetNumber: "SN",
-            neighbourhood: "Condesa",
-            idState:1
+            postalCode: "01000",
+            idNeighborhood:1
         }
     })
 }

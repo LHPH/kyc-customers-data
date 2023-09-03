@@ -109,8 +109,8 @@ public class CustomerStoreProcedure {
                 .addValue("P_ACTIVE",determinateActive(customer.getActive(),operation))
                 .addValue("P_STREET",customer.getAddress().getStreet())
                 .addValue("P_STREET_NUMBER",customer.getAddress().getStreetNumber())
-                .addValue("P_NEIGHBOURHOOD",customer.getAddress().getNeighbourhood())
-                .addValue("P_ID_STATE",customer.getAddress().getIdState());
+                .addValue("P_POSTAL_CODE",customer.getAddress().getPostalCode())
+                .addValue("P_ID_NEIGHBOURHOOD",customer.getAddress().getIdNeighborhood());
 
         return in;
     }

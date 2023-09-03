@@ -1,9 +1,6 @@
 spring:
   application:
     name: kyc-customers-data
-  graphql:
-    schema:
-      locations: "classpath*:graphql/**/"
 
 logging:
   level:

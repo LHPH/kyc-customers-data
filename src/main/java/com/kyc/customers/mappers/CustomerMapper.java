@@ -32,8 +32,8 @@ public interface CustomerMapper {
     @Mappings({
             @Mapping(target ="street" ,source = "source.street"),
             @Mapping(target ="streetNumber" ,source = "source.streetNumber"),
-            @Mapping(target ="neighbourhood" ,source = "source.neighbourhood"),
-            @Mapping(target ="idState" ,source = "source.idState")
+            @Mapping(target ="postalCode" ,source = "source.postalCode"),
+            @Mapping(target ="idNeighborhood" ,source = "source.idNeighborhood")
     })
     CustomerAddress toCustomerAddressType(CustomerAddressInput source);
 }
