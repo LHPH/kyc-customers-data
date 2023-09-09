@@ -1,0 +1,42 @@
+spring:
+  datasource:
+    url: ${kyc.config.database.url}
+    username: ${kyc.config.database.username}
+    password: ${kyc.config.database.pass}
+    hikari:
+      maximum-pool-size: 10
+  jpa:
+    properties:
+      hibernate:
+        temp:
+          use_jdbc_metadata_defaults: false
+    database-platform: org.hibernate.dialect.PostgreSQL9Dialect
+
+  graphql:
+    schema:
+      printer:
+        enabled: true
+
+logging:
+  file:
+    name: /opt/kyc/logs/${spring.application.name}.log
+  logback:
+    rollingpolicy:
+      file-name-pattern: /opt/kyc/logs/${spring.application.name}/%d{yyyy-MM-dd}.%i.log.gz
+      max-file-size: 50MB
+      max-history: 30
+  level:
+    root: INFO
+    com.kyc: INFO
+    org.springframework: INFO
+    org.hibernate.SQL: INFO
+    org.hibernate.type.descriptor.sql: TRACE
+    org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping: TRACE
+
+server:
+  ssl:
+    enabled: true
+    key-store-type: PKCS12
+    key-store: /opt/kyc/kyc-config-files/keystore.p12
+    key-store-password: test
+    key-alias: backbone-key

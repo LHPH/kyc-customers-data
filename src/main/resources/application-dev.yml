@@ -16,8 +16,6 @@ spring:
     schema:
       printer:
         enabled: true
-server:
-  port: 9001
 
 logging:
   level:
@@ -27,3 +25,11 @@ logging:
     org.hibernate.SQL: DEBUG
     org.hibernate.type.descriptor.sql: TRACE
     org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping: TRACE
+
+server:
+  ssl:
+    enabled: true
+    key-store-type: PKCS12
+    key-store: /opt/kyc/kyc-config-files/keystore.p12
+    key-store-password: test
+    key-alias: backbone-key
