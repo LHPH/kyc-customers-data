@@ -25,18 +25,21 @@ public class CustomerRepository {
     @Qualifier("queriesProps")
     private Properties queriesProps;
 
+    @Autowired
+    private CustomerMapper customerMapper;
+
     public List<Customer> getAllCustomers(){
 
         String sql = String.valueOf(queriesProps.get("getAllCustomers"));
 
-        return jdbcTemplate.query(sql,new CustomerMapper());
+        return jdbcTemplate.query(sql,customerMapper);
     }
 
     public Customer getCustomerById(Integer id){
 
         String sql = String.valueOf(queriesProps.get("getCustomerById"));
 
-        List<Customer> customers = jdbcTemplate.query(sql,new CustomerMapper(),id);
+        List<Customer> customers = jdbcTemplate.query(sql,customerMapper,id);
 
         if(!customers.isEmpty()){
             return customers.get(0);
@@ -48,7 +51,7 @@ public class CustomerRepository {
 
         String sql = String.valueOf(queriesProps.get("getCustomerByRfc"));
 
-        List<Customer> customers = jdbcTemplate.query(sql,new CustomerMapper(),rfc);
+        List<Customer> customers = jdbcTemplate.query(sql,customerMapper,rfc);
 
         if(!customers.isEmpty()){
             return customers.get(0);

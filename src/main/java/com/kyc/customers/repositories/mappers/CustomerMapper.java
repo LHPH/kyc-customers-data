@@ -4,10 +4,12 @@ import com.kyc.customers.model.graphql.types.Customer;
 import com.kyc.customers.model.graphql.types.CustomerAddress;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.stereotype.Component;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+@Component
 public class CustomerMapper implements RowMapper<Customer> {
 
     @Override
@@ -29,8 +31,9 @@ public class CustomerMapper implements RowMapper<Customer> {
         CustomerAddress address = new CustomerAddress();
         address.setStreet(StringUtils.upperCase(resultSet.getString("STREET")));
         address.setStreetNumber(StringUtils.upperCase(resultSet.getString("STREET_NUMBER")));
-        address.setNeighbourhood(StringUtils.upperCase(resultSet.getString("NEIGHBOURHOOD")));
-        address.setIdState(resultSet.getInt("ID_STATE"));
+
+        address.setPostalCode(resultSet.getString("POSTAL_CODE"));
+        address.setIdNeighborhood(resultSet.getInt("ID_NEIGHBORHOOD"));
 
         customer.setAddress(address);
 

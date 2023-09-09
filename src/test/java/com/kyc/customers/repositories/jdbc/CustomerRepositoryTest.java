@@ -31,6 +31,9 @@ public class CustomerRepositoryTest {
     @Mock
     private Properties queriesProps;
 
+    @Mock
+    private CustomerMapper customerMapper;
+
     @InjectMocks
     private CustomerRepository customerRepository;
 

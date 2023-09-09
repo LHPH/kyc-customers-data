@@ -110,7 +110,7 @@ public class CustomerStoreProcedure {
                 .addValue("P_STREET",customer.getAddress().getStreet())
                 .addValue("P_STREET_NUMBER",customer.getAddress().getStreetNumber())
                 .addValue("P_POSTAL_CODE",customer.getAddress().getPostalCode())
-                .addValue("P_ID_NEIGHBOURHOOD",customer.getAddress().getIdNeighborhood());
+                .addValue("P_ID_NEIGHBORHOOD",customer.getAddress().getIdNeighborhood());
 
         return in;
     }
