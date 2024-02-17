@@ -1,11 +1,13 @@
 package com.kyc.customers.mappers;
 
+import com.kyc.customers.model.dao.CustomerPostalCodeData;
 import com.kyc.customers.model.graphql.input.CustomerAddressInput;
 import com.kyc.customers.model.graphql.input.CustomerInput;
 import com.kyc.customers.model.graphql.types.Customer;
 import com.kyc.customers.model.graphql.types.CustomerAddress;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
 import org.mapstruct.Mappings;
 import org.mapstruct.Named;
 
@@ -36,4 +38,14 @@ public interface CustomerMapper {
             @Mapping(target ="idNeighborhood" ,source = "source.idNeighborhood")
     })
     CustomerAddress toCustomerAddressType(CustomerAddressInput source);
+
+
+    @Mappings({
+            @Mapping(target ="neighborhood" ,source = "source.neighborhood"),
+            @Mapping(target ="idCity" ,source = "source.idCity"),
+            @Mapping(target ="city" ,source = "source.city"),
+            @Mapping(target ="idState" ,source = "source.idState"),
+            @Mapping(target ="state" ,source = "source.state")
+    })
+    void setPostalCodesData(CustomerPostalCodeData source, @MappingTarget CustomerAddress target);
 }

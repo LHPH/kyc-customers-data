@@ -1,10 +1,12 @@
 package com.kyc.customers.controller;
 
+import com.kyc.core.model.graphql.RequestGraphqlData;
 import com.kyc.core.model.web.RequestData;
 import com.kyc.customers.model.graphql.input.CustomerFilter;
 import com.kyc.customers.model.graphql.input.CustomerInput;
 import com.kyc.customers.model.graphql.types.Customer;
 import com.kyc.customers.services.CustomerService;
+import graphql.schema.DataFetchingEnvironment;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,18 +28,21 @@ public class CustomerController {
     private CustomerService customerService;
 
     @QueryMapping
-    public List<Customer> customers(){
+    public List<Customer> customers(DataFetchingEnvironment environment){
 
-        RequestData<Void> req = RequestData.<Void>builder()
+        RequestGraphqlData<Void> req = RequestGraphqlData.<Void>builder()
+                .environment(environment)
                 .build();
         return customerService.getAllCustomers(req);
     }
 
     @QueryMapping
-    public Customer customer(@Argument CustomerFilter filter){
+    public Customer customer(@Argument CustomerFilter filter,
+                             DataFetchingEnvironment environment){
 
-        RequestData<CustomerFilter> req = RequestData.<CustomerFilter>builder()
-                .body(filter)
+        RequestGraphqlData<CustomerFilter> req = RequestGraphqlData.<CustomerFilter>builder()
+                .payload(filter)
+                .environment(environment)
                 .build();
 
         return customerService.getCustomerByFilter(req);
@@ -47,8 +52,8 @@ public class CustomerController {
     public Integer addCustomer(@Argument @Valid CustomerInput customer){
 
         LOGGER.info("{}",customer);
-        RequestData<CustomerInput> req = RequestData.<CustomerInput>builder()
-                .body(customer)
+        RequestGraphqlData<CustomerInput> req = RequestGraphqlData.<CustomerInput>builder()
+                .payload(customer)
                 .build();
         return customerService.createCustomer(req);
     }
@@ -56,9 +61,9 @@ public class CustomerController {
     @MutationMapping
     public Customer updateCustomer(@Argument Integer id, @Argument @Valid CustomerInput customer){
 
-        RequestData<CustomerInput> req = RequestData.<CustomerInput>builder()
-                .pathParams(Collections.singletonMap("id",id))
-                .body(customer)
+        RequestGraphqlData<CustomerInput> req = RequestGraphqlData.<CustomerInput>builder()
+                .arguments(Collections.singletonMap("id",id))
+                .payload(customer)
                 .build();
 
         return customerService.updateCustomer(req);
@@ -67,8 +72,8 @@ public class CustomerController {
     @MutationMapping
     public Boolean deleteCustomer(@Argument Integer id){
 
-        RequestData<Void> req = RequestData.<Void>builder()
-                .pathParams(Collections.singletonMap("id",id))
+        RequestGraphqlData<Void> req = RequestGraphqlData.<Void>builder()
+                .arguments(Collections.singletonMap("id",id))
                 .build();
         return customerService.deleteCustomer(req);
     }

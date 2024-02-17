@@ -1,15 +1,18 @@
 package com.kyc.customers.services;
 
 import com.kyc.core.exception.KycGraphqlException;
-import com.kyc.core.model.web.MessageData;
-import com.kyc.core.model.web.RequestData;
+import com.kyc.core.model.MessageData;
+import com.kyc.core.model.graphql.RequestGraphqlData;
 import com.kyc.core.properties.KycMessages;
 import com.kyc.customers.mappers.CustomerMapper;
+import com.kyc.customers.model.dao.CustomerPostalCodeData;
 import com.kyc.customers.model.graphql.input.CustomerFilter;
 import com.kyc.customers.model.graphql.input.CustomerInput;
 import com.kyc.customers.model.graphql.types.Customer;
 import com.kyc.customers.repositories.jdbc.CustomerRepository;
 import com.kyc.customers.repositories.stores.CustomerStoreProcedure;
+import graphql.schema.DataFetchingEnvironment;
+import graphql.schema.DataFetchingFieldSelectionSet;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.slf4j.Logger;
@@ -24,6 +27,13 @@ import java.util.List;
 import static com.kyc.customers.constants.AppConstants.MSG_CODE_001;
 import static com.kyc.customers.constants.AppConstants.MSG_CODE_002;
 import static com.kyc.customers.constants.AppConstants.MSG_CODE_003;
+import static com.kyc.customers.constants.AppConstants.PATH_CUSTOMER_ADDRESS_CITY;
+import static com.kyc.customers.constants.AppConstants.PATH_CUSTOMER_ADDRESS_ID_CITY;
+import static com.kyc.customers.constants.AppConstants.PATH_CUSTOMER_ADDRESS_ID_NEIGHBORHOOD;
+import static com.kyc.customers.constants.AppConstants.PATH_CUSTOMER_ADDRESS_ID_STATE;
+import static com.kyc.customers.constants.AppConstants.PATH_CUSTOMER_ADDRESS_NEIGHBORHOOD;
+import static com.kyc.customers.constants.AppConstants.PATH_CUSTOMER_ADDRESS_POSTAL_CODE;
+import static com.kyc.customers.constants.AppConstants.PATH_CUSTOMER_ADDRESS_STATE;
 
 @Service
 public class CustomerService {
@@ -40,39 +50,58 @@ public class CustomerService {
     private CustomerStoreProcedure customerStoreProcedure;
 
     @Autowired
+    private PostalCodeDataService postalCodeDataService;
+
+    @Autowired
     private KycMessages kycMessages;
 
-    public List<Customer> getAllCustomers(RequestData<Void> req){
+    public List<Customer> getAllCustomers(RequestGraphqlData<Void> req){
 
         List<Customer> customers = customerRepository.getAllCustomers();
+
+        DataFetchingEnvironment environment = req.getEnvironment();
+        DataFetchingFieldSelectionSet selectionSet = environment.getSelectionSet();
+
         LOGGER.info("Retrieving {} customers",customers.size());
-        return customers;
+        return customers.stream()
+                .peek(customer -> setPostalCodeData(customer,selectionSet))
+                .toList();
     }
 
-    public Customer getCustomerByFilter(RequestData<CustomerFilter> req){
+    public Customer getCustomerByFilter(RequestGraphqlData<CustomerFilter> req){
 
-        CustomerFilter filter = req.getBody();
+        CustomerFilter filter = req.getPayload();
+        DataFetchingEnvironment environment = req.getEnvironment();
+        DataFetchingFieldSelectionSet selectionSet = environment.getSelectionSet();
 
+        Customer customer = null;
         if(filter.getId()!=null){
             LOGGER.info("Retrieving customer by id {}",filter.getId());
-            return customerRepository.getCustomerById(filter.getId());
+            customer = customerRepository.getCustomerById(filter.getId());
+
         }
         else if(filter.getRfc()!=null){
             LOGGER.info("Retrieving customer by RFC {}",filter.getRfc());
-            return customerRepository.getCustomerByRfc(filter.getRfc());
+            customer =  customerRepository.getCustomerByRfc(filter.getRfc());
         }
         else if(filter.getName()!=null){
             LOGGER.info("Retrieving customer by name");
-            return customerRepository.getCustomerByNames(filter.getName());
+            customer =  customerRepository.getCustomerByNames(filter.getName());
+        }
+
+        if(customer!=null){
+
+            setPostalCodeData(customer,selectionSet);
+            return customer;
         }
         LOGGER.info("The criteria is not valid, return empty result");
         return new Customer();
     }
 
-    public Integer createCustomer(RequestData<CustomerInput> req){
+    public Integer createCustomer(RequestGraphqlData<CustomerInput> req){
 
         try{
-            CustomerInput input = req.getBody();
+            CustomerInput input = req.getPayload();
             Customer customer = customerMapper.toCustomerType(input);
             LOGGER.info("Verifying if the customer data is not already registered");
             int id = customerStoreProcedure.getIdCustomer(customer);
@@ -107,12 +136,12 @@ public class CustomerService {
         }
     }
 
-    public Customer updateCustomer(RequestData<CustomerInput> req){
+    public Customer updateCustomer(RequestGraphqlData<CustomerInput> req){
 
         try{
 
-            CustomerInput input = req.getBody();
-            String param = ObjectUtils.toString(req.getPathParams().get("id"),()-> null);
+            CustomerInput input = req.getPayload();
+            String param = ObjectUtils.toString(req.getArguments().get("id"),()-> null);
             Integer id = NumberUtils.toInt(param);
 
             LOGGER.info("Verifying if the customer {} exists",id);
@@ -146,10 +175,10 @@ public class CustomerService {
         }
     }
 
-    public Boolean deleteCustomer(RequestData<Void> req){
+    public Boolean deleteCustomer(RequestGraphqlData<Void> req){
 
         try{
-            String param = ObjectUtils.toString(req.getPathParams().get("id"),()-> null);
+            String param = ObjectUtils.toString(req.getArguments().get("id"),()-> null);
             Integer id = NumberUtils.toInt(param);
 
             LOGGER.info("Verifying if the customer data exists for {}",id);
@@ -181,6 +210,25 @@ public class CustomerService {
                     .errorData(messageData)
                     .errorType(ErrorType.INTERNAL_ERROR)
                     .build();
+        }
+    }
+
+    private void setPostalCodeData(Customer customer, DataFetchingFieldSelectionSet selectionSet){
+
+        boolean hasPostalCode = selectionSet.contains(PATH_CUSTOMER_ADDRESS_POSTAL_CODE);
+        boolean hasIdNeighborhood = selectionSet.contains(PATH_CUSTOMER_ADDRESS_ID_NEIGHBORHOOD);
+        boolean hasExtra = selectionSet.containsAnyOf(
+                PATH_CUSTOMER_ADDRESS_NEIGHBORHOOD,
+                PATH_CUSTOMER_ADDRESS_ID_CITY,
+                PATH_CUSTOMER_ADDRESS_CITY,
+                PATH_CUSTOMER_ADDRESS_ID_STATE,
+                PATH_CUSTOMER_ADDRESS_STATE
+        );
+
+        if(hasPostalCode && hasIdNeighborhood && hasExtra){
+
+            CustomerPostalCodeData result = postalCodeDataService.getCustomerPostalCodeData(customer.getAddress());
+            customerMapper.setPostalCodesData(result,customer.getAddress());
         }
     }
 }

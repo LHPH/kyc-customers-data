@@ -1,7 +1,7 @@
 package com.kyc.customers.exception;
 
 import com.kyc.core.exception.KycGraphqlException;
-import com.kyc.core.model.web.MessageData;
+import com.kyc.core.model.MessageData;
 import com.kyc.core.properties.KycMessages;
 import graphql.ErrorClassification;
 import graphql.GraphQLError;

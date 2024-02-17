@@ -17,6 +17,13 @@ spring:
       printer:
         enabled: true
 
+eureka:
+  client:
+    enabled: true
+    fetchRegistry: true
+    serviceUrl:
+      defaultZone: http://192.168.100.61:9100/eureka
+
 logging:
   level:
     root: INFO
@@ -28,7 +35,7 @@ logging:
 
 server:
   ssl:
-    enabled: true
+    enabled: false
     key-store-type: PKCS12
     key-store: /opt/kyc/kyc-config-files/keystore.p12
     key-store-password: test

@@ -1,6 +1,6 @@
 package com.kyc.customers.controller;
 
-import com.kyc.core.model.web.RequestData;
+import com.kyc.core.model.graphql.RequestGraphqlData;
 import com.kyc.core.properties.KycMessages;
 import com.kyc.customers.model.graphql.types.Customer;
 import com.kyc.customers.services.CustomerService;
@@ -35,7 +35,7 @@ public class CustomerControllerTest {
         Customer customer = new Customer();
         customer.setId(1);
 
-        given(customerService.getAllCustomers(any(RequestData.class)))
+        given(customerService.getAllCustomers(any(RequestGraphqlData.class)))
                 .willReturn(Collections.singletonList(customer));
 
         graphQlTester.documentName("getAllCustomers")
@@ -50,7 +50,7 @@ public class CustomerControllerTest {
         Customer customer = new Customer();
         customer.setId(1);
 
-        given(customerService.getCustomerByFilter(any(RequestData.class)))
+        given(customerService.getCustomerByFilter(any(RequestGraphqlData.class)))
                 .willReturn(customer);
 
         graphQlTester.documentName("getCustomerById")
@@ -63,7 +63,7 @@ public class CustomerControllerTest {
     @Test
     public void addCustomer_addingNewCustomer_returnCustomerId(){
 
-        given(customerService.createCustomer(any(RequestData.class))).willReturn(1);
+        given(customerService.createCustomer(any(RequestGraphqlData.class))).willReturn(1);
 
         graphQlTester.documentName("addCustomer")
                 .execute()
@@ -78,7 +78,7 @@ public class CustomerControllerTest {
         Customer customer = new Customer();
         customer.setId(1);
 
-        given(customerService.updateCustomer(any(RequestData.class))).willReturn(customer);
+        given(customerService.updateCustomer(any(RequestGraphqlData.class))).willReturn(customer);
 
         graphQlTester.documentName("updateCustomer")
                 .execute()
@@ -90,7 +90,7 @@ public class CustomerControllerTest {
     @Test
     public void deleteCustomer_deletingCustomer_returnBooleanTrue(){
 
-        given(customerService.deleteCustomer(any(RequestData.class))).willReturn(true);
+        given(customerService.deleteCustomer(any(RequestGraphqlData.class))).willReturn(true);
 
         graphQlTester.documentName("deleteCustomer")
                 .variable("id",1)

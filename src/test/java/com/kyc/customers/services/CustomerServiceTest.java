@@ -1,21 +1,26 @@
 package com.kyc.customers.services;
 
 import com.kyc.core.exception.KycGraphqlException;
-import com.kyc.core.model.web.RequestData;
+import com.kyc.core.model.graphql.RequestGraphqlData;
 import com.kyc.core.properties.KycMessages;
 import com.kyc.customers.mappers.CustomerMapper;
+import com.kyc.customers.model.dao.CustomerPostalCodeData;
 import com.kyc.customers.model.graphql.input.CustomerFilter;
 import com.kyc.customers.model.graphql.input.CustomerInput;
 import com.kyc.customers.model.graphql.input.CustomerName;
 import com.kyc.customers.model.graphql.types.Customer;
+import com.kyc.customers.model.graphql.types.CustomerAddress;
 import com.kyc.customers.repositories.jdbc.CustomerRepository;
 import com.kyc.customers.repositories.stores.CustomerStoreProcedure;
 import graphql.Assert;
+import graphql.schema.DataFetchingEnvironment;
+import graphql.schema.DataFetchingFieldSelectionSet;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.dao.InvalidDataAccessResourceUsageException;
 import org.springframework.graphql.execution.ErrorType;
@@ -23,6 +28,8 @@ import org.springframework.graphql.execution.ErrorType;
 import java.util.Collections;
 import java.util.List;
 
+import static com.kyc.customers.constants.AppConstants.PATH_CUSTOMER_ADDRESS_ID_NEIGHBORHOOD;
+import static com.kyc.customers.constants.AppConstants.PATH_CUSTOMER_ADDRESS_POSTAL_CODE;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -45,6 +52,9 @@ public class CustomerServiceTest {
     private CustomerStoreProcedure customerStoreProcedure;
 
     @Mock
+    private PostalCodeDataService postalCodeDataService;
+
+    @Mock
     private KycMessages kycMessages;
 
     @InjectMocks
@@ -54,9 +64,28 @@ public class CustomerServiceTest {
     @Test
     public void getAllCustomers_retrieveCustomers_returnListCustomers(){
 
-        given(customerRepository.getAllCustomers()).willReturn(Collections.singletonList(new Customer()));
+        DataFetchingEnvironment environment = Mockito.mock(DataFetchingEnvironment.class);
+        DataFetchingFieldSelectionSet selectionSet = Mockito.mock(DataFetchingFieldSelectionSet.class);
 
-        List<Customer> list = customerService.getAllCustomers(RequestData.<Void>builder().build());
+        given(customerRepository.getAllCustomers())
+                .willReturn(Collections.singletonList(getCustomer()));
+        given(environment.getSelectionSet())
+                .willReturn(selectionSet);
+        given(selectionSet.contains(PATH_CUSTOMER_ADDRESS_POSTAL_CODE))
+                .willReturn(true);
+        given(selectionSet.contains(PATH_CUSTOMER_ADDRESS_ID_NEIGHBORHOOD))
+                .willReturn(true);
+        given(selectionSet.containsAnyOf(anyString(),anyString(),anyString(),anyString(),anyString()))
+                .willReturn(true);
+        given(postalCodeDataService.getCustomerPostalCodeData(any(CustomerAddress.class)))
+                .willReturn(new CustomerPostalCodeData());
+
+
+        RequestGraphqlData<Void> req = RequestGraphqlData.<Void>builder()
+                .environment(environment)
+                .build();
+
+        List<Customer> list = customerService.getAllCustomers(req);
         Assert.assertNotEmpty(list);
     }
 
@@ -65,9 +94,28 @@ public class CustomerServiceTest {
 
         CustomerFilter filter = new CustomerFilter();
         filter.setId(1);
-        RequestData<CustomerFilter> req = RequestData.<CustomerFilter>builder()
-                .body(filter)
+
+        DataFetchingEnvironment environment = Mockito.mock(DataFetchingEnvironment.class);
+        DataFetchingFieldSelectionSet selectionSet = Mockito.mock(DataFetchingFieldSelectionSet.class);
+
+        RequestGraphqlData<CustomerFilter> req = RequestGraphqlData.<CustomerFilter>builder()
+                .payload(filter)
+                .environment(environment)
                 .build();
+
+        given(environment.getSelectionSet())
+                .willReturn(selectionSet);
+        given(selectionSet.contains(PATH_CUSTOMER_ADDRESS_POSTAL_CODE))
+                .willReturn(true);
+        given(selectionSet.contains(PATH_CUSTOMER_ADDRESS_ID_NEIGHBORHOOD))
+                .willReturn(true);
+        given(selectionSet.containsAnyOf(anyString(),anyString(),anyString(),anyString(),anyString()))
+                .willReturn(true);
+        given(customerRepository.getCustomerById(1))
+                .willReturn(getCustomer());
+        given(postalCodeDataService.getCustomerPostalCodeData(any(CustomerAddress.class)))
+                .willReturn(new CustomerPostalCodeData());
+
         customerService.getCustomerByFilter(req);
         verify(customerRepository,times(1)).getCustomerById(1);
     }
@@ -77,9 +125,28 @@ public class CustomerServiceTest {
 
         CustomerFilter filter = new CustomerFilter();
         filter.setRfc("TEST");
-        RequestData<CustomerFilter> req = RequestData.<CustomerFilter>builder()
-                .body(filter)
+
+        DataFetchingEnvironment environment = Mockito.mock(DataFetchingEnvironment.class);
+        DataFetchingFieldSelectionSet selectionSet = Mockito.mock(DataFetchingFieldSelectionSet.class);
+
+        RequestGraphqlData<CustomerFilter> req = RequestGraphqlData.<CustomerFilter>builder()
+                .payload(filter)
+                .environment(environment)
                 .build();
+
+        given(environment.getSelectionSet())
+                .willReturn(selectionSet);
+        given(selectionSet.contains(PATH_CUSTOMER_ADDRESS_POSTAL_CODE))
+                .willReturn(true);
+        given(selectionSet.contains(PATH_CUSTOMER_ADDRESS_ID_NEIGHBORHOOD))
+                .willReturn(true);
+        given(selectionSet.containsAnyOf(anyString(),anyString(),anyString(),anyString(),anyString()))
+                .willReturn(true);
+        given(customerRepository.getCustomerByRfc("TEST"))
+                .willReturn(getCustomer());
+        given(postalCodeDataService.getCustomerPostalCodeData(any(CustomerAddress.class)))
+                .willReturn(new CustomerPostalCodeData());
+
         customerService.getCustomerByFilter(req);
         verify(customerRepository,times(1)).getCustomerByRfc("TEST");
     }
@@ -92,9 +159,27 @@ public class CustomerServiceTest {
         name.setFirstName("TEST");
         filter.setName(name);
 
-        RequestData<CustomerFilter> req = RequestData.<CustomerFilter>builder()
-                .body(filter)
+        DataFetchingEnvironment environment = Mockito.mock(DataFetchingEnvironment.class);
+        DataFetchingFieldSelectionSet selectionSet = Mockito.mock(DataFetchingFieldSelectionSet.class);
+
+        RequestGraphqlData<CustomerFilter> req = RequestGraphqlData.<CustomerFilter>builder()
+                .payload(filter)
+                .environment(environment)
                 .build();
+
+        given(environment.getSelectionSet())
+                .willReturn(selectionSet);
+        given(selectionSet.contains(PATH_CUSTOMER_ADDRESS_POSTAL_CODE))
+                .willReturn(true);
+        given(selectionSet.contains(PATH_CUSTOMER_ADDRESS_ID_NEIGHBORHOOD))
+                .willReturn(true);
+        given(selectionSet.containsAnyOf(anyString(),anyString(),anyString(),anyString(),anyString()))
+                .willReturn(true);
+        given(customerRepository.getCustomerByNames(name))
+                .willReturn(getCustomer());
+        given(postalCodeDataService.getCustomerPostalCodeData(any(CustomerAddress.class)))
+                .willReturn(new CustomerPostalCodeData());
+
         customerService.getCustomerByFilter(req);
         verify(customerRepository,times(1)).getCustomerByNames(name);
     }
@@ -104,10 +189,18 @@ public class CustomerServiceTest {
 
         CustomerFilter filter = new CustomerFilter();
 
-        RequestData<CustomerFilter> req = RequestData.<CustomerFilter>builder()
-                .body(filter)
+        DataFetchingEnvironment environment = Mockito.mock(DataFetchingEnvironment.class);
+        DataFetchingFieldSelectionSet selectionSet = Mockito.mock(DataFetchingFieldSelectionSet.class);
+
+        RequestGraphqlData<CustomerFilter> req = RequestGraphqlData.<CustomerFilter>builder()
+                .payload(filter)
+                .environment(environment)
                 .build();
+
+        given(environment.getSelectionSet()).willReturn(selectionSet);
+
         customerService.getCustomerByFilter(req);
+
         verify(customerRepository,times(0)).getCustomerById(anyInt());
         verify(customerRepository,times(0)).getCustomerByRfc(anyString());
         verify(customerRepository,times(0)).getCustomerByNames(any(CustomerName.class));
@@ -117,8 +210,8 @@ public class CustomerServiceTest {
     public void createCustomer_createNewCustomer_returnIdCustomer(){
 
         CustomerInput customerInput = new CustomerInput();
-        RequestData<CustomerInput> req = RequestData.<CustomerInput>builder()
-                .body(customerInput)
+        RequestGraphqlData<CustomerInput> req = RequestGraphqlData.<CustomerInput>builder()
+                .payload(customerInput)
                 .build();
 
         given(customerMapper.toCustomerType(any(CustomerInput.class))).willReturn(new Customer());
@@ -135,8 +228,8 @@ public class CustomerServiceTest {
         KycGraphqlException ex = Assertions.assertThrows(KycGraphqlException.class,()->{
 
             CustomerInput customerInput = new CustomerInput();
-            RequestData<CustomerInput> req = RequestData.<CustomerInput>builder()
-                    .body(customerInput)
+            RequestGraphqlData<CustomerInput> req = RequestGraphqlData.<CustomerInput>builder()
+                    .payload(customerInput)
                     .build();
 
             given(customerMapper.toCustomerType(any(CustomerInput.class))).willReturn(new Customer());
@@ -153,8 +246,8 @@ public class CustomerServiceTest {
         KycGraphqlException ex = Assertions.assertThrows(KycGraphqlException.class,()->{
 
             CustomerInput customerInput = new CustomerInput();
-            RequestData<CustomerInput> req = RequestData.<CustomerInput>builder()
-                    .body(customerInput)
+            RequestGraphqlData<CustomerInput> req = RequestGraphqlData.<CustomerInput>builder()
+                    .payload(customerInput)
                     .build();
 
             given(customerMapper.toCustomerType(any(CustomerInput.class))).willReturn(new Customer());
@@ -171,9 +264,9 @@ public class CustomerServiceTest {
     public void updateCustomer_updatingCustomer_updatedCustomer(){
 
         CustomerInput customerInput = new CustomerInput();
-        RequestData<CustomerInput> req = RequestData.<CustomerInput>builder()
-                .pathParams(Collections.singletonMap("id",1))
-                .body(customerInput)
+        RequestGraphqlData<CustomerInput> req = RequestGraphqlData.<CustomerInput>builder()
+                .arguments(Collections.singletonMap("id",1))
+                .payload(customerInput)
                 .build();
 
         given(customerRepository.getCustomerById(1)).willReturn(new Customer());
@@ -189,9 +282,9 @@ public class CustomerServiceTest {
         KycGraphqlException ex = Assertions.assertThrows(KycGraphqlException.class,()->{
 
             CustomerInput customerInput = new CustomerInput();
-            RequestData<CustomerInput> req = RequestData.<CustomerInput>builder()
-                    .pathParams(Collections.singletonMap("id",1))
-                    .body(customerInput)
+            RequestGraphqlData<CustomerInput> req = RequestGraphqlData.<CustomerInput>builder()
+                    .arguments(Collections.singletonMap("id",1))
+                    .payload(customerInput)
                     .build();
 
             given(customerRepository.getCustomerById(1)).willReturn(null);
@@ -207,9 +300,9 @@ public class CustomerServiceTest {
         KycGraphqlException ex = Assertions.assertThrows(KycGraphqlException.class,()->{
 
             CustomerInput customerInput = new CustomerInput();
-            RequestData<CustomerInput> req = RequestData.<CustomerInput>builder()
-                    .pathParams(Collections.singletonMap("id",1))
-                    .body(customerInput)
+            RequestGraphqlData<CustomerInput> req = RequestGraphqlData.<CustomerInput>builder()
+                    .arguments(Collections.singletonMap("id",1))
+                    .payload(customerInput)
                     .build();
 
             given(customerRepository.getCustomerById(1)).willReturn(new Customer());
@@ -224,8 +317,8 @@ public class CustomerServiceTest {
     @Test
     public void deleteCustomer_deletingCustomer_deletedCustomer(){
 
-        RequestData<Void> req = RequestData.<Void>builder()
-                .pathParams(Collections.singletonMap("id",1))
+        RequestGraphqlData<Void> req = RequestGraphqlData.<Void>builder()
+                .arguments(Collections.singletonMap("id",1))
                 .build();
 
         given(customerRepository.getCustomerById(anyInt())).willReturn(new Customer()).willReturn(null);
@@ -238,8 +331,8 @@ public class CustomerServiceTest {
     @Test
     public void deleteCustomer_deletingCustomer_NoDeletedCustomer(){
 
-        RequestData<Void> req = RequestData.<Void>builder()
-                .pathParams(Collections.singletonMap("id",1))
+        RequestGraphqlData<Void> req = RequestGraphqlData.<Void>builder()
+                .arguments(Collections.singletonMap("id",1))
                 .build();
 
         given(customerRepository.getCustomerById(1)).willReturn(new Customer()).willReturn(new Customer());
@@ -254,8 +347,8 @@ public class CustomerServiceTest {
 
         KycGraphqlException ex = Assertions.assertThrows(KycGraphqlException.class,()->{
 
-            RequestData<Void> req = RequestData.<Void>builder()
-                    .pathParams(Collections.singletonMap("id",1))
+            RequestGraphqlData<Void> req = RequestGraphqlData.<Void>builder()
+                    .arguments(Collections.singletonMap("id",1))
                     .build();
 
             given(customerRepository.getCustomerById(1)).willReturn(null);
@@ -270,8 +363,8 @@ public class CustomerServiceTest {
 
         KycGraphqlException ex = Assertions.assertThrows(KycGraphqlException.class,()->{
 
-            RequestData<Void> req = RequestData.<Void>builder()
-                    .pathParams(Collections.singletonMap("id",1))
+            RequestGraphqlData<Void> req = RequestGraphqlData.<Void>builder()
+                    .arguments(Collections.singletonMap("id",1))
                     .build();
 
             given(customerRepository.getCustomerById(1)).willReturn(new Customer());
@@ -283,4 +376,10 @@ public class CustomerServiceTest {
         Assertions.assertEquals(ErrorType.INTERNAL_ERROR,ex.getErrorType());
     }
 
+    private Customer getCustomer(){
+
+        Customer customer = new Customer();
+        customer.setAddress(new CustomerAddress());
+        return customer;
+    }
 }
