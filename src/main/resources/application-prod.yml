@@ -5,6 +5,8 @@ spring:
     password: ${kyc.config.database.postgresql.secret}
     hikari:
       maximum-pool-size: 10
+      minimum-idle: 2
+      idle-timeout: 300000
   jpa:
     properties:
       hibernate:
