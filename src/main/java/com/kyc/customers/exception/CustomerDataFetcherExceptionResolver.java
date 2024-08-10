@@ -7,6 +7,7 @@ import graphql.ErrorClassification;
 import graphql.GraphQLError;
 import graphql.GraphqlErrorBuilder;
 import graphql.schema.DataFetchingEnvironment;
+import jakarta.validation.ConstraintViolationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +16,6 @@ import org.springframework.graphql.execution.ErrorType;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Mono;
 
-import javax.validation.ConstraintViolationException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;

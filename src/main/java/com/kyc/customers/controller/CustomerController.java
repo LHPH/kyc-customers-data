@@ -1,12 +1,12 @@
 package com.kyc.customers.controller;
 
 import com.kyc.core.model.graphql.RequestGraphqlData;
-import com.kyc.core.model.web.RequestData;
 import com.kyc.customers.model.graphql.input.CustomerFilter;
 import com.kyc.customers.model.graphql.input.CustomerInput;
 import com.kyc.customers.model.graphql.types.Customer;
 import com.kyc.customers.services.CustomerService;
 import graphql.schema.DataFetchingEnvironment;
+import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +15,6 @@ import org.springframework.graphql.data.method.annotation.MutationMapping;
 import org.springframework.graphql.data.method.annotation.QueryMapping;
 import org.springframework.stereotype.Controller;
 
-import javax.validation.Valid;
 import java.util.Collections;
 import java.util.List;
 
