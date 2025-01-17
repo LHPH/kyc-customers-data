@@ -1,6 +1,6 @@
 spring:
   datasource:
-    url: ${kyc.config.database.postgresql.url}
+    url: ${kyc.config.database.postgresql.url}?escapeSyntaxCallMode=callIfNoReturn
     username: ${kyc.config.database.postgresql.username}
     password: ${kyc.config.database.postgresql.secret}
     hikari:
