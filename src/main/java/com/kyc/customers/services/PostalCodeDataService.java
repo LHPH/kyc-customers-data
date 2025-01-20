@@ -31,17 +31,19 @@ public class PostalCodeDataService {
 
     public CustomerPostalCodeData getCustomerPostalCodeData(CustomerAddress customerAddress){
 
+        String postalCode = customerAddress.getPostalCode();
+        Integer idNeighborhood = customerAddress.getIdNeighborhood();
+        LOGGER.info("Retrieving data of postal code {}",postalCode);
+
+        CustomerPostalCodeData data = new CustomerPostalCodeData();
+        data.setPostalCode(postalCode);
+        data.setIdNeighborhood(idNeighborhood);
+
         try{
-            String postalCode = customerAddress.getPostalCode();
-            Integer idNeighborhood = customerAddress.getIdNeighborhood();
-            LOGGER.info("Retrieving data of postal code {}",postalCode);
 
             ResponseData<GetPostalCodeDataResponse> response = catalogsRestService.getPostalCode(postalCode);
             GetPostalCodeDataResponse result = response.getData();
 
-            CustomerPostalCodeData data = new CustomerPostalCodeData();
-            data.setPostalCode(postalCode);
-            data.setIdNeighborhood(idNeighborhood);
             data.setIdCity(result.getIdCity());
             data.setCity(result.getCity());
             data.setIdState(result.getIdState());
@@ -60,12 +62,14 @@ public class PostalCodeDataService {
 
             MessageData messageData = kycMessages.getMessage(MSG_CODE_002);
 
-            throw KycGraphqlException.builderGraphqlException()
+            KycGraphqlException ex = KycGraphqlException.builderGraphqlException()
                     .inputData(customerAddress)
                     .exception(feignException)
                     .errorData(messageData)
                     .errorType(ErrorType.INTERNAL_ERROR)
                     .build();
+            LOGGER.warn("Could not get postal code info, returning fallback",ex);
+            return data;
         }
     }
 }

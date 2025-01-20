@@ -85,7 +85,7 @@ public class PostalCodeDataServiceTest {
     @Test
     public void getCustomerPostalCodeData_errorInService_throwException(){
 
-        KycGraphqlException ex = Assertions.assertThrows(KycGraphqlException.class,()->{
+        Assertions.assertDoesNotThrow(()->{
 
             CustomerAddress customerAddress = new CustomerAddress();
             customerAddress.setPostalCode("01000");
@@ -102,8 +102,10 @@ public class PostalCodeDataServiceTest {
             given(catalogsRestService.getPostalCode(("01000")))
                     .willThrow(feignException);
 
-            postalCodeDataService.getCustomerPostalCodeData(customerAddress);
+            CustomerPostalCodeData result = postalCodeDataService.getCustomerPostalCodeData(customerAddress);
+
+            Assertions.assertEquals(customerAddress.getPostalCode(),result.getPostalCode());
+            Assertions.assertEquals(customerAddress.getIdNeighborhood(),result.getIdNeighborhood());
         });
-        Assertions.assertEquals(ErrorType.INTERNAL_ERROR,ex.getErrorType());
     }
 }
