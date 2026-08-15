@@ -1,6 +1,5 @@
 package com.kyc.customers.services;
 
-import com.kyc.core.exception.KycGraphqlException;
 import com.kyc.core.model.web.ResponseData;
 import com.kyc.core.properties.KycMessages;
 import com.kyc.customers.model.dao.CustomerPostalCodeData;
@@ -18,7 +17,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.graphql.execution.ErrorType;
 import org.springframework.http.HttpStatus;
 
 import java.nio.charset.StandardCharsets;

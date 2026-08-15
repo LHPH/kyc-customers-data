@@ -1,6 +1,6 @@
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:6000/kyc_database?escapeSyntaxCallMode=callIfNoReturn
+    url: jdbc:postgresql://localhost:5432/kyc_database?escapeSyntaxCallMode=callIfNoReturn
     username: kyc_user
     password: kyc_pass
     hikari:
